@@ -1,7 +1,7 @@
 # Week 2: Project
 
-1. Name of Project 
-idea: **Health Assistant** 
+1. Name of Project: A.I. Health Advice
+idea: **Virtual Health Assistant** 
 
 2. What problem are you solving?
 Our project will help others by giving people advice on eating healthy meals and 
@@ -9,7 +9,7 @@ activities. This will be able to help our users to live a healthy lifestyle.
 
 3. Who / What does the project interface with?
 
-a. people? Users 
+a. people? Anyone that needs advice to live a healthy lifestyle
 
 
 b. other systems? (APIs)
