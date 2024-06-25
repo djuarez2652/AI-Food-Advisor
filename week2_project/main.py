@@ -6,76 +6,58 @@ from tabulate import tabulate
 
 # Set environment variables
 my_api_key = os.getenv('OPENAI_KEY')
-
 openai.api_key = my_api_key
-
-from openai import OpenAI
 
 # Create an OpenAPI client using the key from our environment variable
 client = OpenAI(
     api_key=my_api_key,
 )
-print("Welcome to A.I. Health Advisor!\n")
-print("Please enter your information in the following questions:\n")
-user_input1 = input("What is your name? ")
-user_input2 = input("How old are you? ")
-user_input3 = input("Enter your current weight? (in lbs or kg): ")
-user_input4 = input("Enter your goal weight? (in lbs or kg): ")
-user_input5 = input("Provide an explaination on why you want to live a better and healthier lifestyle: \n")
 
-#User message
-user_message = (
-    f"My name is {user_input1}, I am {user_input2} years old. " 
-    f"I currently weigh {user_input3} and my goal weight is {user_input4}. " 
-    f"I want to live a better and healthier lifestyle because {user_input5}. "
-)
+def get_user_info(): 
+    print("Please enter your information in the following questions:\n")
+    user_input1 = input("What is your name? ")
+    user_input2 = input("How old are you? ")
+    user_input3 = input("Enter your current weight? (in lbs or kg): ")
+    user_input4 = input("Enter your goal weight? (in lbs or kg): ")
+    user_input5 = input("Provide an explaination on why you want to live a better and healthier lifestyle: \n")
 
-
-# Specify the model to use and the messages to send
-completion = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=[
-        {"role": "system", "content": "You are a health advisor and are giving healthy food recommendations"},
-        {"role": "user", "content": user_message}
-    ]
-)
-print(completion.choices[0].message.content) 
+    return {
+        "name": user_input1,
+        "age": user_input2,
+        "weight": user_input3,
+        "goal_weight": user_input4,
+        "reason": user_input5
+    }
 
 #User data for the database
-user_data_for_db= {
-    "name": user_input1,
-    "age": user_input2,
-    "weight": user_input3,
-    "goal_weight": user_input4,
-    "reason": user_input5
-}
-#connects to db
-engine = sqlite3.connect('userdata.db')
-cursor = engine.cursor()
+def input_userdata_into_db(user_data_for_db):
+    #connects to db
+    engine = sqlite3.connect('userdata.db')
+    cursor = engine.cursor()
 
-# creates db table
-create_table = '''
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL,
-        age INTEGER,
-        weight INTEGER,
-        goal_weight INTEGER,
-        reason TEXT
-    );
+    # creates db table
+    create_table = '''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            age INTEGER,
+            weight INTEGER,
+            goal_weight INTEGER,
+            reason TEXT
+        );
     '''
 
-cursor.execute(create_table)
+    cursor.execute(create_table)
 
-#insert user data in db table
-insert_user_into_table = '''
-INSERT INTO users (name, age, weight, goal_weight,reason)
-VALUES(:name,:age,:weight,:goal_weight,:reason)
-'''
+    #insert user data in db table
+    insert_user_into_table = '''
+    INSERT INTO users (name, age, weight, goal_weight,reason)
+    VALUES(:name,:age,:weight,:goal_weight,:reason)
+    '''
 
-cursor.execute(insert_user_into_table, user_data_for_db)
-engine.commit()
-engine.close()
+    cursor.execute(insert_user_into_table, user_data_for_db)
+    engine.commit()
+    engine.close()
 
 #print db 
 def print_database():
@@ -90,7 +72,91 @@ def print_database():
     print(tabulate(rows,headers=header,tablefmt="grid"))
     engine.close()
 
-print_database()
+
+def call_openai(user_message):
+    # Specify the model to use and the messages to send
+    completion = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "system", "content": "You are a health advisor and are giving healthy food recommendations"},
+        {"role": "user", "content": user_message}
+    ]
+)
+    return completion.choices[0].message.content
+
+def get_username(name):
+    engine = sqlite3.connect('userdata.db')
+    cursor = engine.cursor()
+
+    cursor.execute("SELECT * FROM users WHERE name=?", (name,))
+    user = cursor.fetchone()
+
+    engine.close()
+    return user
+
+def main(): 
+    print("Welcome to A.I. Health Advisor!\n")
+    user_starter = input("Have you used this application before? Please enter 'yes' or 'no': ").strip().lower()
+
+    if user_starter == 'yes':
+        user_name = input("Please enter your name that you have perivously entered: ").strip()
+        user = get_username(user_name)
+
+        if user: 
+            print(f"Welcome Back {user[1]}!")
+            print("Here is your current information that we have from you: \n")
+            header= ["ID","NAME","AGE","WEIGHT","Goal WEIGHT","REASON"]
+            user_data = [
+                ["NAME",user[1]],
+                ["AGE",user[2]],
+                ["WEIGHT", user[3]],
+                ["GOAL WEIGHT", user[4]],
+                ["REASON",user[5]]
+            ]
+            print(tabulate(user_data, headers=header, tablefmt="grid"))
+
+            more_recom = input("Would you like to get more health recommendations? Please enter(yes/no): \n")
+            if more_recom == "yes": 
+                user_message = (
+                    f"My name is {user[1]}, I am {user[3]} years old. " 
+                    f"I currently weigh {user[3]} and my goal weight is {user[4]}. " 
+                    f"I want to live a better and healthier lifestyle because {user[5]}. "
+                )
+                print(call_openai(user_message))
+            else: 
+                print("Thank you for visiting!")
+        else:
+            print("Sorry! User is not in database")
+    else:
+        user_data_for_db = get_user_info()
+
+        user_message = (
+            f"My name is {user_data_for_db['name']}, I am {user_data_for_db['age']} years old. " 
+            f"I currently weigh {user_data_for_db['weight']} and my goal weight is {user_data_for_db['goal_weight']}. " 
+            f"I want to live a better and healthier lifestyle because {user_data_for_db['reason']}. "
+        )
+        print(call_openai(user_message))
+
+        input_userdata_into_db(user_data_for_db)
+        print_database()
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 '''
@@ -147,8 +213,6 @@ Dinner:
 - Option 1: Baked Salmon with Steamed Broccoli and Brown Rice (450 calories)
 - Option 2: Stir-Fried Tofu with Mixed Vegetables and Cauliflower Rice (400 calories)
 - Option 3: Grilled Shrimp Tacos with Cabbage Slaw and Lime Crema (420 calories)
-
-
 
 
 
