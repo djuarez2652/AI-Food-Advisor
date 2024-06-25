@@ -2,6 +2,7 @@ import os
 import openai
 import sqlite3
 from openai import OpenAI
+from tabulate import tabulate
 
 # Set environment variables
 my_api_key = os.getenv('OPENAI_KEY')
@@ -18,8 +19,8 @@ print("Welcome to A.I. Health Advisor!\n")
 print("Please enter your information in the following questions:\n")
 user_input1 = input("What is your name? ")
 user_input2 = input("How old are you? ")
-user_input3 = input("Enter your current weight? (in lbs or kg)")
-user_input4 = input("Enter your goal weight? (in lbs or kg)")
+user_input3 = input("Enter your current weight? (in lbs or kg): ")
+user_input4 = input("Enter your goal weight? (in lbs or kg): ")
 user_input5 = input("Provide an explaination on why you want to live a better and healthier lifestyle: \n")
 
 #User message
@@ -49,12 +50,12 @@ user_data_for_db= {
     "reason": user_input5
 }
 #connects to db
-engine = sqlite3.connect(userdata.db)
+engine = sqlite3.connect('userdata.db')
 cursor = engine.cursor()
 
 # creates db table
 create_table = '''
-    CREATE TABLE IF NOT EXIST users (
+    CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
         age INTEGER,
@@ -69,14 +70,27 @@ cursor.execute(create_table)
 #insert user data in db table
 insert_user_into_table = '''
 INSERT INTO users (name, age, weight, goal_weight,reason)
+VALUES(:name,:age,:weight,:goal_weight,:reason)
+'''
 
+cursor.execute(insert_user_into_table, user_data_for_db)
+engine.commit()
+engine.close()
 
+#print db 
+def print_database():
+    engine = sqlite3.connect('userdata.db')
+    cursor = engine.cursor()
 
+    cursor.execute("SELECT * FROM users")
+    rows = cursor.fetchall()
 
+    header= ["ID","NAME","AGE","WEIGHT","Goal WEIGHT","REASON"]
+    print("User Data:\n")
+    print(tabulate(rows,headers=header,tablefmt="grid"))
+    engine.close()
 
-
-
-
+print_database()
 
 
 '''
