@@ -4,55 +4,60 @@ import pandas as pd
 import os
 
 """
-Takes a list of strings of a food items and returns
-a list of INTs of the amount of calories otherwise
-returns None. Appends the total number of calories at
-the end
+Takes a list of strings of food items and returns
+a list of INTs of their respective amount of calories 
+for each item; if not found in API it returns None. 
+Appends the total number of calories at the end
 """
 
-def getCalories( query ):
+def getCalories( lst_of_foods ):
 
-
-    queried = {}
-    calories = []
+    lst_of_cals = []
+    cache = {}
     total = 0
 
-    # for food_item in query:
-    #     if food_item in queried:
-    #         calories.append(queried[food_item])
-    #         continue
-        
-        
-    base_url = "https://food-nutrition-information.p.rapidapi.com/foods/search"
+    for food in lst_of_foods:
+        if food in cache:
+            total += cache[food]
+            lst_of_cals.append(cache[food])
+            continue
 
-    query = { "query":f"${query}", "pageSize":"1","pageNumber":"1" }
+        url = "https://food-nutrition-information.p.rapidapi.com/foods/search"
 
-    api_key = os.getenv('RAPIDAPI_KEY')
-    headers = {
-        "x-rapidapi-key": api_key,
-        "x-rapidapi-host": "food-nutrition-information.p.rapidapi.com"
-    } 
-            
-    response = requests.get(base_url, headers=headers, params=query)
-    print(response.json())
-        # data = response.json()
-        # print(data)
+        query = { 
+                    "query": f"{food}",
+                    "pageSize": "1",
+                    "pageNumber": "1"
+                }
 
-    #     foodNutrients = data['foods'][0]['foodNutrients']
+        RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
 
-    #     cals = None
-    #     for nutrients in foodNutrients:
-    #         if nutrients['nutrientId'] == 1008: # calorie id is 1008
-    #             cals = nutrients['value']
-    #             total += cals
-    #             print(nutrients)
-    #             break
-        
-    #     calories.append(cals)
-    #     queried[food_item] = cals
+        headers = {
+                    "x-rapidapi-key": RAPIDAPI_KEY,
+                    "x-rapidapi-host": "food-nutrition-information.p.rapidapi.com"
+                }
 
-    # calories.append(total)
-    # return calories
+        response = requests.get(url, headers=headers, params=query)
+        data = response.json()
+        try:
+            foodNutrients = data['foods'][0]['foodNutrients']
+        except:
+            lst_of_cals.append(None)
+            continue
+
+        cals = None
+        for nutrients in foodNutrients:
+            if nutrients['nutrientId'] == 1008: # cal id is 1008
+                cals = nutrients['value']
+                cache[food] = cals
+                total += cals
+                break
+
+        lst_of_cals.append(cals)
+    
+    lst_of_cals.append(total)
+
+    return lst_of_cals
 
 
-print(getCalories(["Apple", "Carrots", "Oranges"]))
+print(getCalories(["Apple", "Apple", "random"]))
