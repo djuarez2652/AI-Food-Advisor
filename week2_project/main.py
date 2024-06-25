@@ -1,5 +1,6 @@
 import os 
 import openai
+import sqlite3
 from openai import OpenAI
 
 # Set environment variables
@@ -41,12 +42,42 @@ print(completion.choices[0].message.content)
 
 #User data for the database
 user_data_for_db= {
-    "name": user_input1
-    "age": user_input2
-    "weight": user_input3 
-    "goal_weight": user_input4
+    "name": user_input1,
+    "age": user_input2,
+    "weight": user_input3,
+    "goal_weight": user_input4,
     "reason": user_input5
 }
+#connects to db
+engine = sqlite3.connect(userdata.db)
+cursor = engine.cursor()
+
+# creates db table
+create_table = '''
+    CREATE TABLE IF NOT EXIST users (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        age INTEGER,
+        weight INTEGER,
+        goal_weight INTEGER,
+        reason TEXT
+    );
+    '''
+
+cursor.execute(create_table)
+
+#insert user data in db table
+insert_user_into_table = '''
+INSERT INTO users (name, age, weight, goal_weight,reason)
+
+
+
+
+
+
+
+
+
 
 '''
 Sample response from API with the user message:
@@ -86,4 +117,27 @@ Hi Charlize! It's great to hear that you're motivated to live a healthier lifest
    - Prepare nutritious meals in advance to avoid the temptation of convenient but unhealthy fast food options.
 
 Remember, it's important to focus on progress, not perfection. Making small changes consistently over time will help you develop healthier habits. If you need further guidance or support, consider consulting a nutritionist or health coach. Good luck on your journey to a healthier lifestyle, Charlize!
+
+
+Breakfast:
+- Option 1: Greek Yogurt with Berries and Honey (250 calories)
+- Option 2: Oatmeal with Fresh Fruits and Nuts (300 calories)
+- Option 3: Scrambled Eggs with Spinach and Whole Wheat Toast (280 calories)
+
+Lunch:
+- Option 1: Grilled Chicken Salad with Mixed Vegetables and Vinaigrette (350 calories)
+- Option 2: Quinoa Bowl with Roasted Vegetables and Chickpeas (400 calories)
+- Option 3: Turkey and Avocado Wrap with a Side Salad (380 calories)
+
+Dinner:
+- Option 1: Baked Salmon with Steamed Broccoli and Brown Rice (450 calories)
+- Option 2: Stir-Fried Tofu with Mixed Vegetables and Cauliflower Rice (400 calories)
+- Option 3: Grilled Shrimp Tacos with Cabbage Slaw and Lime Crema (420 calories)
+
+
+
+
+
 '''
+
+
