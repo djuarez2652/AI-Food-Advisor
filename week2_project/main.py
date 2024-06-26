@@ -182,7 +182,7 @@ def parse_response(message):
 def main(): 
     print("Welcome to A.I. Health Advisor!\n")
     update_db()
-    clear_db()
+   #clear_db()
     user_starter = input("Have you used this application before? Please enter 'yes' or 'no': ").strip().lower()
 
     if user_starter == 'yes':
@@ -199,6 +199,7 @@ def main():
                 ["WEIGHT", user[3]],
                 ["GOAL WEIGHT", user[4]],
                 ["REASON",user[5]],
+                ["RECOMMENDATIONS",user[6]]
                 
             ]
             print(tabulate(user_data, headers=header, tablefmt="grid"))
