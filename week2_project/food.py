@@ -49,6 +49,8 @@ def getCalories( lst_of_foods ):
         for nutrients in foodNutrients:
             if nutrients['nutrientId'] == 1008: # cal id is 1008
                 cals = nutrients['value']
+                if cals > 400: # some serving sizes are too big
+                    cals //= 5
                 cache[food] = cals
                 total += cals
                 break
@@ -58,6 +60,3 @@ def getCalories( lst_of_foods ):
     lst_of_cals.append(total)
 
     return lst_of_cals
-
-
-print(getCalories(["Apple", "Apple", "random"]))

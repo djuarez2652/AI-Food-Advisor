@@ -3,6 +3,9 @@ import openai
 import sqlite3
 from openai import OpenAI
 from tabulate import tabulate
+from prompt import prompt
+from food import getCalories
+from colorama import Fore, Back, Style
 
 # Set environment variables
 my_api_key = os.getenv('OPENAI_KEY')
@@ -78,7 +81,7 @@ def call_openai(user_message):
     completion = client.chat.completions.create(
     model="gpt-3.5-turbo",
     messages=[
-        {"role": "system", "content": "You are a health advisor and are giving healthy food recommendations"},
+        {"role": "system", "content": f"{prompt}"},
         {"role": "user", "content": user_message}
     ]
 )
@@ -93,6 +96,46 @@ def get_username(name):
 
     engine.close()
     return user
+            
+
+# parses the meals and calculates calories
+def parse_options(options):
+    response = ""
+
+    for option in options:
+        divider = option.find('|')
+        name = option[2:divider-1]
+        ingredients = (option[divider + 2:]).split(', ')
+        response += f"- {name} ({Fore.CYAN}{getCalories(ingredients)[-1]}{Style.RESET_ALL} cals) | {' '.join(ingredients)}\n"
+    
+    return f"{response}\n"
+
+# parses the chatgpt response
+def parse_response(message):
+    lines = message.split('\n')
+    currMeal = 0
+    response = """\nRecommended Meals with estimated calories:\n"""
+
+    temp = []
+    for line in lines:
+        temp.append(line.strip())
+    temp.append('')
+    lines = temp
+
+    for _ in range(3):
+        for line in lines:
+            line = line.strip()
+            if line in ['Breakfast:', 'Lunch:', 'Dinner:']:
+                response += f"{Fore.GREEN}{line.strip()}{Style.RESET_ALL}\n"
+                curr = lines[currMeal+1:]
+                end = curr.index('')
+                response += parse_options(curr[:end])
+                lines = curr[end+1:]
+                currMeal = 0
+                break
+            currMeal += 1
+    
+    return response
 
 def main(): 
     print("Welcome to A.I. Health Advisor!\n")
@@ -122,7 +165,7 @@ def main():
                     f"I currently weigh {user[3]} and my goal weight is {user[4]}. " 
                     f"I want to live a better and healthier lifestyle because {user[5]}. "
                 )
-                print(call_openai(user_message))
+                print(parse_response(call_openai(user_message)))
             else: 
                 print("Thank you for visiting!")
         else:
@@ -135,13 +178,45 @@ def main():
             f"I currently weigh {user_data_for_db['weight']} and my goal weight is {user_data_for_db['goal_weight']}. " 
             f"I want to live a better and healthier lifestyle because {user_data_for_db['reason']}. "
         )
-        print(call_openai(user_message))
+        print(parse_response(call_openai(user_message)))
 
         input_userdata_into_db(user_data_for_db)
         print_database()
 
+# def test():
+#     msg = """
+# Breakfast:
+# - Avocado Toast | whole grain bread, avocado, cherry tomatoes
+# - Greek Yogurt Parfait | Greek yogurt, mixed berries, granola
+# - Smoothie Bowl | spinach, banana, almond milk, chia seeds
+
+# Lunch:
+# - Grilled Chicken Salad | grilled chicken breast, mixed greens, cherry tomatoes, cucumbers, balsamic vinaigrette
+# - Quinoa Veggie Bowl | quinoa, roasted vegetables, chickpeas, tahini dressing
+# - Tuna Wrap | whole grain wrap, tuna, spinach, avocado, lemon juice
+
+# Dinner:
+# - Baked Salmon | salmon fillet, asparagus, lemon, olive oil
+# - Stir-Fry | mixed vegetables, tofu or chicken, soy sauce, brown rice
+# - Stuffed Bell Peppers | bell peppers, ground turkey, quinoa, black beans, diced tomatoes
+# """
+    # msg = """Breakfast:
+    # - Berry Smoothie | mixed berries, banana, spinach
+    # - Avocado Toast | whole grain bread, avocado, cherry tomatoes
+
+    # Lunch:
+    # - Quinoa Salad | quinoa, mixed vegetables, chickpeas
+    # - Grilled Chicken Salad | mixed greens, grilled chicken, cucumbers
+
+    # Dinner:
+    # - Baked Salmon | salmon fillet, asparagus, quinoa
+    # - Stir-Fried Tofu and Vegetables | tofu, bell peppers, broccoli
+    # """
+    # parse_response(msg)
+
 if __name__ == "__main__":
     main()
+    # test()
 
 
 
