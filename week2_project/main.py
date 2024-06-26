@@ -83,6 +83,14 @@ def save_recommendations(user_id, recommendations):
     engine.commit()
     engine.close()
 
+def update_user_info(user_id,field,new_info): 
+    engine = sqlite3.connect('userdata.db')
+    cursor = engine.cursor()
+
+    cursor.execute(f"UPDATE users SET {field}=? WHERE id=?", (new_info,user_id))
+    engine.commit()
+    engine.close()
+
 def clear_db():
     engine = sqlite3.connect('userdata.db')
     cursor = engine.cursor()
@@ -179,6 +187,49 @@ def parse_response(message):
     
     return response
 
+
+def display_menu():
+    print('''\n
+        +--+--+--+--+--+--+--+--+
+        |       Menu            |
+        +--+--+--+--+--+--+--+--+
+        | 1. Edit Name          |
+        | 2. Edit Age           |
+        | 3. Edit Weight.       |
+        | 4. Edit Goal Weight   |
+        | 5. Edit Reason        |
+        | 6. Save/Exit          |
+        +--+--+--+--+--+--+--+--+
+
+    ''')
+
+def edit_userdata(user_id): 
+    new_name = None
+    while True: 
+        display_menu()
+        selection = input("Enter the number option that you want to edit from the menu from 1 - 6: ").strip()
+        if selection == "1": 
+            new_name = input("Enter a new name: ").strip()
+            update_user_info(user_id,'name',new_name)
+        elif selection == "2":
+            new_age = input("Enter a new age: ").strip()
+            update_user_info(user_id,'age',new_age)
+        elif selection == "3":
+            new_weight = input("Enter your new weight: ").strip()
+            update_user_info(user_id,'weight',new_weight)
+        elif selection == "4":
+            new_goal_weight = input("Enter your new goal weight: ").strip()
+            update_user_info(user_id,'goal_weight',new_goal_weight)
+        elif selection == "5":
+            new_reason = input("Enter your new reason for wanting to be healthier: ").strip()
+            update_user_info(user_id,"reason",new_reason)
+        elif selection == "6":
+            break
+        else:
+            print("You did not enter a valid option!")
+    return new_name
+
+
 def main(): 
     print("Welcome to A.I. Health Advisor!\n")
     update_db()
@@ -204,14 +255,25 @@ def main():
             ]
             print(tabulate(user_data, headers=header, tablefmt="grid"))
 
+            edit_db = input("Would you like to edit your information? Please enter 'yes' or 'no': ").strip().lower()
+            if edit_db == 'yes':
+                new_user = edit_userdata(user[0])
+                if new_user:
+                    user_name = new_user
+                user = get_username(user_name)
+
             more_recom = input("Would you like to get more health recommendations? Please enter(yes/no): \n")
-            if more_recom == "yes": 
+            if more_recom == "yes":
                 user_message = (
-                    f"My name is {user[1]}, I am {user[3]} years old. " 
+                    f"My name is {user[1]}, I am {user[2]} years old. " 
                     f"I currently weigh {user[3]} and my goal weight is {user[4]}. " 
                     f"I want to live a better and healthier lifestyle because {user[5]}. "
                 )
-                print(parse_response(call_openai(user_message)))
+                recommendations = parse_response(call_openai(user_message))
+                print(recommendations)
+                
+                save_recommendations(user[0],recommendations)
+                print_user_in_db()
             else: 
                 print("Thank you for visiting!")
         else:
@@ -229,6 +291,8 @@ def main():
         user_data_for_db['recommendations'] = recommendations
         input_userdata_into_db(user_data_for_db)
         print_user_in_db()
+
+        print("Thank you for visiting!")
 
 # def test():
 #     msg = """
