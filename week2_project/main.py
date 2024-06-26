@@ -75,6 +75,18 @@ def print_database():
     print(tabulate(rows,headers=header,tablefmt="grid"))
     engine.close()
 
+def print_user_in_db():
+    engine = sqlite3.connect("userdata.db")
+    cursor = engine.cursor()
+
+    cursor.execute("SELECT * FROM users ORDER BY ID DESC LIMIT 1")
+    row = cursor.fetchone()
+
+    header= ["ID","NAME","AGE","WEIGHT","Goal WEIGHT","REASON"]
+    print("Here is a copy of your info saved in our database: ")
+    print(tabulate([row],headers=header,tablefmt="grid"))
+    engine.close()
+
 
 def call_openai(user_message):
     # Specify the model to use and the messages to send
@@ -181,7 +193,7 @@ def main():
         print(parse_response(call_openai(user_message)))
 
         input_userdata_into_db(user_data_for_db)
-        print_database()
+        print_user_in_db()
 
 # def test():
 #     msg = """
@@ -217,80 +229,3 @@ def main():
 if __name__ == "__main__":
     main()
     # test()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'''
-Sample response from API with the user message:
-Welcome to A.I. Health Advisor!
-
-Please enter your information in the following questions:
-
-What is your name? Charlize
-How old are you? 20
-Enter your current weight? (in lbs or kg)180
-Enter your goal weight? (in lbs or kg)165
-Provide an explaination on why you want to live a better and healthier lifestyle: 
-I would get better at eating healthier foods as i life to eat junk food and struggle to healthy foods. I also dont like to work out alot and what to be more active.
-Hi Charlize! It's great to hear that you're motivated to live a healthier lifestyle. Making small, sustainable changes to your diet and activity level can have a big impact on your overall well-being. Here are some recommendations to help you achieve your goals:
-
-1. **Healthy Eating Habits**:
-   - Start by incorporating more fruits and vegetables into your meals. Aim to fill half your plate with fruits and veggies at each meal.
-   - Choose whole grains like brown rice, quinoa, and whole wheat bread over refined grains.
-   - Opt for lean protein sources such as chicken, fish, beans, and tofu.
-   - Limit your intake of processed foods, sugary drinks, and high-fat foods.
-   - Practice mindful eating by paying attention to your hunger cues and eating slowly.
-
-2. **Healthy Snack Ideas**:
-   - Greek yogurt with fresh berries and a sprinkle of nuts
-   - Hummus with veggie sticks
-   - Apple slices with almond butter
-   - Air-popped popcorn
-   - Homemade trail mix with nuts, seeds, and dried fruit
-
-3. **Physical Activity**:
-   - Find activities you enjoy, whether it's walking, dancing, swimming, or yoga. Aim for at least 150 minutes of moderate-intensity exercise per week.
-   - Take short breaks throughout the day to move around and stretch. Even a 10-minute walk can boost your energy levels.
-   - Consider incorporating strength training exercises to build muscle and improve your metabolism.
-
-4. **Meal Planning**:
-   - Plan your meals and snacks ahead of time to ensure you have healthy options readily available.
-   - Prepare nutritious meals in advance to avoid the temptation of convenient but unhealthy fast food options.
-
-Remember, it's important to focus on progress, not perfection. Making small changes consistently over time will help you develop healthier habits. If you need further guidance or support, consider consulting a nutritionist or health coach. Good luck on your journey to a healthier lifestyle, Charlize!
-
-
-Breakfast:
-- Option 1: Greek Yogurt with Berries and Honey (250 calories)
-- Option 2: Oatmeal with Fresh Fruits and Nuts (300 calories)
-- Option 3: Scrambled Eggs with Spinach and Whole Wheat Toast (280 calories)
-
-Lunch:
-- Option 1: Grilled Chicken Salad with Mixed Vegetables and Vinaigrette (350 calories)
-- Option 2: Quinoa Bowl with Roasted Vegetables and Chickpeas (400 calories)
-- Option 3: Turkey and Avocado Wrap with a Side Salad (380 calories)
-
-Dinner:
-- Option 1: Baked Salmon with Steamed Broccoli and Brown Rice (450 calories)
-- Option 2: Stir-Fried Tofu with Mixed Vegetables and Cauliflower Rice (400 calories)
-- Option 3: Grilled Shrimp Tacos with Cabbage Slaw and Lime Crema (420 calories)
-
-
-
-'''
-
-
