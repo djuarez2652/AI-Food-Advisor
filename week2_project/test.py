@@ -11,6 +11,16 @@ class TestMain(unittest.TestCase):
                     "goalWeight": 130,
                     "reason": "To lose weight"
                     }
+        self.msg = """Breakfast:
+                        - Berry Smoothie | mixed berries, banana, spinach
+                        - Avocado Toast | whole grain bread, avocado, cherry tomatoes
+                        Lunch:
+                        - Quinoa Salad | quinoa, mixed vegetables, chickpeas
+                        - Grilled Chicken Salad | mixed greens, grilled chicken, cucumbers
+                        Dinner:
+                        - Baked Salmon | salmon fillet, asparagus, quinoa
+                        - Stir-Fried Tofu and Vegetables | tofu, bell peppers, broccoli
+                    """
 
     def test_get_user_info(self):        
         self.assertEqual(self.get_user_info(), self.user)
@@ -25,4 +35,8 @@ class TestMain(unittest.TestCase):
         self.print_user_in_db()
 
     def test_get_username(self):
-        self.assertEqual(self.get)
+        self.assertEqual(self.get_username("RANDOM"), None)
+        self.assertNotEqual(self.get_username("Rob"), None)
+
+    def test_parse_response(self):
+        self.test_parse_response(self.msg)
