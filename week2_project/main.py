@@ -32,6 +32,18 @@ def get_user_info():
         "reason": user_input5
     }
 
+#checks if recommendations is in db, if not adds it
+def update_db(): 
+    engine = sqlite3.connect('userdata.db')
+    cursor = engine.cursor()
+
+    cursor.execute("PRAGMA table_info(users)")
+    columns = [column[1] for column in cursor.fetchall()]
+    if "recommendations" not in columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN recommendations TEXT")
+        engine.commit()
+        engine.close()
+
 #User data for the database
 def input_userdata_into_db(user_data_for_db):
     #connects to db
@@ -46,7 +58,8 @@ def input_userdata_into_db(user_data_for_db):
             age INTEGER,
             weight INTEGER,
             goal_weight INTEGER,
-            reason TEXT
+            reason TEXT, 
+            recommendations TEXT
         );
     '''
 
@@ -54,13 +67,30 @@ def input_userdata_into_db(user_data_for_db):
 
     #insert user data in db table
     insert_user_into_table = '''
-    INSERT INTO users (name, age, weight, goal_weight,reason)
-    VALUES(:name,:age,:weight,:goal_weight,:reason)
+    INSERT INTO users (name, age, weight, goal_weight,reason,recommendations)
+    VALUES(:name,:age,:weight,:goal_weight,:reason,:recommendations)
     '''
 
     cursor.execute(insert_user_into_table, user_data_for_db)
     engine.commit()
     engine.close()
+
+def save_recommendations(user_id, recommendations):
+    engine = sqlite3.connect('userdata.db')
+    cursor = engine.cursor()
+
+    cursor.execute("UPDATE users SET recommendations=? WHERE id=?", (recommendations,user_id))
+    engine.commit()
+    engine.close()
+
+def clear_db():
+    engine = sqlite3.connect('userdata.db')
+    cursor = engine.cursor()
+
+    cursor.execute("DELETE FROM users")
+    engine.commit()
+    engine.close()
+
 
 #print db 
 def print_database():
@@ -70,7 +100,7 @@ def print_database():
     cursor.execute("SELECT * FROM users")
     rows = cursor.fetchall()
 
-    header= ["ID","NAME","AGE","WEIGHT","Goal WEIGHT","REASON"]
+    header= ["ID","NAME","AGE","WEIGHT","Goal WEIGHT","REASON", "RECOMMENDATIONS"]
     print("User Data:\n")
     print(tabulate(rows,headers=header,tablefmt="grid"))
     engine.close()
@@ -82,7 +112,7 @@ def print_user_in_db():
     cursor.execute("SELECT * FROM users ORDER BY ID DESC LIMIT 1")
     row = cursor.fetchone()
 
-    header= ["ID","NAME","AGE","WEIGHT","Goal WEIGHT","REASON"]
+    header= ["ID","NAME","AGE","WEIGHT","Goal WEIGHT","REASON","RECOMMENDATIONS"]
     print("Here is a copy of your info saved in our database: ")
     print(tabulate([row],headers=header,tablefmt="grid"))
     engine.close()
@@ -151,6 +181,8 @@ def parse_response(message):
 
 def main(): 
     print("Welcome to A.I. Health Advisor!\n")
+    update_db()
+    clear_db()
     user_starter = input("Have you used this application before? Please enter 'yes' or 'no': ").strip().lower()
 
     if user_starter == 'yes':
@@ -166,7 +198,8 @@ def main():
                 ["AGE",user[2]],
                 ["WEIGHT", user[3]],
                 ["GOAL WEIGHT", user[4]],
-                ["REASON",user[5]]
+                ["REASON",user[5]],
+                
             ]
             print(tabulate(user_data, headers=header, tablefmt="grid"))
 
@@ -190,8 +223,9 @@ def main():
             f"I currently weigh {user_data_for_db['weight']} and my goal weight is {user_data_for_db['goal_weight']}. " 
             f"I want to live a better and healthier lifestyle because {user_data_for_db['reason']}. "
         )
-        print(parse_response(call_openai(user_message)))
-
+        recommendations = parse_response(call_openai(user_message))
+        print(recommendations)
+        user_data_for_db['recommendations'] = recommendations
         input_userdata_into_db(user_data_for_db)
         print_user_in_db()
 
