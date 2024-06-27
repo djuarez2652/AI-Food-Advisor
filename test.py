@@ -1,5 +1,8 @@
 import unittest
-from main import get_user_info, print_database, input_userdata_into_db, print_user_in_db, get_username, parse_response
+from main import (
+    get_user_info, print_database, input_userdata_into_db,
+    print_user_in_db, get_username, parse_response
+)
 
 
 class TestMain(unittest.TestCase):
