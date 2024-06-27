@@ -22,7 +22,7 @@ def get_user_info():
     user_input2 = input("How old are you? ")
     user_input3 = input("Enter your current weight? (in lbs or kg): ")
     user_input4 = input("Enter your goal weight? (in lbs or kg): ")
-    user_input5 = input("Provide an explaination on why you want to live a better and healthier lifestyle: \n")
+    user_input5 = input("Provide some information on your current eating habits: \n")
 
     return {
         "name": user_input1,
@@ -221,7 +221,7 @@ def edit_userdata(user_id):
             new_goal_weight = input("Enter your new goal weight: ").strip()
             update_user_info(user_id,'goal_weight',new_goal_weight)
         elif selection == "5":
-            new_reason = input("Enter your new reason for wanting to be healthier: ").strip()
+            new_reason = input("Enter your new info on your current eating habits: ").strip()
             update_user_info(user_id,"reason",new_reason)
         elif selection == "6":
             break
@@ -231,7 +231,7 @@ def edit_userdata(user_id):
 
 
 def main(): 
-    print("Welcome to A.I. Health Advisor!\n")
+    print("Welcome to A.I. Food Advisor!\n")
     update_db()
    #clear_db()
     user_starter = input("Have you used this application before? Please enter 'yes' or 'no': ").strip().lower()
@@ -262,12 +262,12 @@ def main():
                     user_name = new_user
                 user = get_username(user_name)
 
-            more_recom = input("Would you like to get more health recommendations? Please enter(yes/no): \n")
+            more_recom = input("Would you like to get more food recommendations? Please enter(yes/no): \n")
             if more_recom == "yes":
                 user_message = (
                     f"My name is {user[1]}, I am {user[2]} years old. " 
                     f"I currently weigh {user[3]} and my goal weight is {user[4]}. " 
-                    f"I want to live a better and healthier lifestyle because {user[5]}. "
+                    f"I want to eat healthier because currently {user[5]}. "
                 )
                 recommendations = parse_response(call_openai(user_message))
                 print(recommendations)
@@ -284,7 +284,7 @@ def main():
         user_message = (
             f"My name is {user_data_for_db['name']}, I am {user_data_for_db['age']} years old. " 
             f"I currently weigh {user_data_for_db['weight']} and my goal weight is {user_data_for_db['goal_weight']}. " 
-            f"I want to live a better and healthier lifestyle because {user_data_for_db['reason']}. "
+            f"I want to eat healthier because currently {user_data_for_db['reason']}. "
         )
         recommendations = parse_response(call_openai(user_message))
         print(recommendations)
