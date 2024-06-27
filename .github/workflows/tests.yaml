@@ -19,6 +19,7 @@ jobs:
           pip install openai
           pip install tabulate
           pip install colorama
+          pip install requests
 
       - name: Test with unittest
         run: python3 -m unittest test.py
