@@ -156,7 +156,7 @@ def parse_options(options):
         divider = option.find('|')
         name = option[2:divider-1]
         ingredients = (option[divider + 2:]).split(', ')
-        response += f"- {name} ({Fore.CYAN}{getCalories(ingredients)[-1]}{Style.RESET_ALL} cals) | {' '.join(ingredients)}\n"
+        response += f"- {name} ({Fore.CYAN}{getCalories(ingredients)[-1]}{Style.RESET_ALL} cals) | {', '.join([i.capitalize() for i in ingredients])}\n"
     
     return f"{response}\n"
 
@@ -237,7 +237,7 @@ def main():
     user_starter = input("Have you used this application before? Please enter 'yes' or 'no': ").strip().lower()
 
     if user_starter == 'yes':
-        user_name = input("Please enter your name that you have perivously entered: ").strip()
+        user_name = input("Please enter the name that you have previously entered: ").strip()
         user = get_username(user_name)
 
         if user: 
@@ -294,37 +294,5 @@ def main():
 
         print("Thank you for visiting!")
 
-# def test():
-#     msg = """
-# Breakfast:
-# - Avocado Toast | whole grain bread, avocado, cherry tomatoes
-# - Greek Yogurt Parfait | Greek yogurt, mixed berries, granola
-# - Smoothie Bowl | spinach, banana, almond milk, chia seeds
-
-# Lunch:
-# - Grilled Chicken Salad | grilled chicken breast, mixed greens, cherry tomatoes, cucumbers, balsamic vinaigrette
-# - Quinoa Veggie Bowl | quinoa, roasted vegetables, chickpeas, tahini dressing
-# - Tuna Wrap | whole grain wrap, tuna, spinach, avocado, lemon juice
-
-# Dinner:
-# - Baked Salmon | salmon fillet, asparagus, lemon, olive oil
-# - Stir-Fry | mixed vegetables, tofu or chicken, soy sauce, brown rice
-# - Stuffed Bell Peppers | bell peppers, ground turkey, quinoa, black beans, diced tomatoes
-# """
-    # msg = """Breakfast:
-    # - Berry Smoothie | mixed berries, banana, spinach
-    # - Avocado Toast | whole grain bread, avocado, cherry tomatoes
-
-    # Lunch:
-    # - Quinoa Salad | quinoa, mixed vegetables, chickpeas
-    # - Grilled Chicken Salad | mixed greens, grilled chicken, cucumbers
-
-    # Dinner:
-    # - Baked Salmon | salmon fillet, asparagus, quinoa
-    # - Stir-Fried Tofu and Vegetables | tofu, bell peppers, broccoli
-    # """
-    # parse_response(msg)
-
 if __name__ == "__main__":
     main()
-    # test()
