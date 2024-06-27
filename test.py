@@ -5,7 +5,7 @@ class TestMain(unittest.TestCase):
 
     def setUp(self):
         self.user = {
-                    "name": "Rob",
+                    "name": "Test",
                     "age": 18,
                     "currWeight": 140,
                     "goalWeight": 130,
