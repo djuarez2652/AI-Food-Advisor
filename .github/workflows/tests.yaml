@@ -24,7 +24,7 @@ jobs:
 
       - name: Test with unittest
         env:
-          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: python3 -m unittest test.py
 
       - name: Check code coverage

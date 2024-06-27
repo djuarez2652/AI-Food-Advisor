@@ -1,4 +1,4 @@
-import os 
+import os
 import openai
 import sqlite3
 from openai import OpenAI
@@ -8,21 +8,23 @@ from food import getCalories
 from colorama import Fore, Back, Style
 
 # Set environment variables
-my_api_key = os.getenv('OPENAI_KEY')
-openai.api_key = my_api_key
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+openai.api_key = OPENAI_API_KEY
 
 # Create an OpenAPI client using the key from our environment variable
 client = OpenAI(
-    api_key=my_api_key,
+    api_key=OPENAI_API_KEY,
 )
 
-def get_user_info(): 
+
+def get_user_info():
+    reason = "Provide some information on your current eating habits: \n"
     print("Please enter your information in the following questions:\n")
     user_input1 = input("What is your name? ")
     user_input2 = input("How old are you? ")
     user_input3 = input("Enter your current weight? (in lbs or kg): ")
     user_input4 = input("Enter your goal weight? (in lbs or kg): ")
-    user_input5 = input("Provide some information on your current eating habits: \n")
+    user_input5 = input(reason)
 
     return {
         "name": user_input1,
@@ -32,8 +34,9 @@ def get_user_info():
         "reason": user_input5
     }
 
-#checks if recommendations is in db, if not adds it
-def update_db(): 
+
+# checks if recommendations is in db, if not adds it
+def update_db():
     engine = sqlite3.connect('userdata.db')
     cursor = engine.cursor()
 
@@ -44,9 +47,10 @@ def update_db():
         engine.commit()
         engine.close()
 
-#User data for the database
+
+# User data for the database
 def input_userdata_into_db(user_data_for_db):
-    #connects to db
+    # connects to db
     engine = sqlite3.connect('userdata.db')
     cursor = engine.cursor()
 
@@ -58,14 +62,14 @@ def input_userdata_into_db(user_data_for_db):
             age INTEGER,
             weight INTEGER,
             goal_weight INTEGER,
-            reason TEXT, 
+            reason TEXT,
             recommendations TEXT
         );
     '''
 
     cursor.execute(create_table)
 
-    #insert user data in db table
+    # insert user data in db table
     insert_user_into_table = '''
     INSERT INTO users (name, age, weight, goal_weight,reason,recommendations)
     VALUES(:name,:age,:weight,:goal_weight,:reason,:recommendations)
@@ -75,19 +79,22 @@ def input_userdata_into_db(user_data_for_db):
     engine.commit()
     engine.close()
 
+
 def save_recommendations(user_id, recommendations):
     engine = sqlite3.connect('userdata.db')
     cursor = engine.cursor()
-
-    cursor.execute("UPDATE users SET recommendations=? WHERE id=?", (recommendations,user_id))
+    task = "UPDATE users SET recommendations=? WHERE id=?"
+    cursor.execute(task, (recommendations, user_id))
     engine.commit()
     engine.close()
 
-def update_user_info(user_id,field,new_info): 
+
+def update_user_info(user_id, field, new_info):
     engine = sqlite3.connect('userdata.db')
     cursor = engine.cursor()
+    task = f"UPDATE users SET {field}=? WHERE id=?"
 
-    cursor.execute(f"UPDATE users SET {field}=? WHERE id=?", (new_info,user_id))
+    cursor.execute(task, (new_info, user_id))
     engine.commit()
     engine.close()
 
