@@ -1,8 +1,8 @@
 import unittest
 from main import *
 
-class TestMain(unittest.TestCase):
 
+class TestMain(unittest.TestCase):
     def setUp(self):
         self.user = {
                     "name": "Test",
@@ -13,16 +13,19 @@ class TestMain(unittest.TestCase):
                     }
         self.msg = """Breakfast:
                         - Berry Smoothie | mixed berries, banana, spinach
-                        - Avocado Toast | whole grain bread, avocado, cherry tomatoes
+                        - Avocado Toast | whole grain bread, avocado,
+                         cherry tomatoes
                         Lunch:
                         - Quinoa Salad | quinoa, mixed vegetables, chickpeas
-                        - Grilled Chicken Salad | mixed greens, grilled chicken, cucumbers
+                        - Grilled Chicken Salad | mixed greens,
+                        grilled chicken, cucumbers
                         Dinner:
                         - Baked Salmon | salmon fillet, asparagus, quinoa
-                        - Stir-Fried Tofu and Vegetables | tofu, bell peppers, broccoli
+                        - Stir-Fried Tofu and Vegetables | tofu, bell peppers,
+                        broccoli
                     """
 
-    def test_get_user_info(self):        
+    def test_get_user_info(self):
         self.assertEqual(self.get_user_info(), self.user)
 
     def test_print_database(self):
