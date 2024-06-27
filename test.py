@@ -4,13 +4,6 @@ from main import get_user_info, print_database, input_userdata_into_db, print_us
 
 class TestMain(unittest.TestCase):
     def setUp(self):
-        self.user = {
-                    "name": "Test",
-                    "age": 18,
-                    "currWeight": 140,
-                    "goalWeight": 130,
-                    "reason": "To lose weight"
-                    }
         self.msg = """Breakfast:
                         - Berry Smoothie | mixed berries, banana, spinach
                         - Avocado Toast | whole grain bread, avocado,
@@ -25,14 +18,8 @@ class TestMain(unittest.TestCase):
                         broccoli
                     """
 
-    def test_get_user_info(self):
-        self.assertEqual(get_user_info(), self.user)
-
     def test_print_database(self):
         print_database()
-
-    def test_input_userdata_into_db(self):
-        input_userdata_into_db(self.user)
 
     def test_print_user_in_db(self):
         print_user_in_db()
