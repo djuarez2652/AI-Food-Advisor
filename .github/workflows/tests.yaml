@@ -16,6 +16,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip pytest
           pip install coverage
+          pip install openai
+          pip install tabulate
+          pip install colorama
 
       - name: Test with unittest
         run: python3 -m unittest test.py
