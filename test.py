@@ -26,20 +26,20 @@ class TestMain(unittest.TestCase):
                     """
 
     def test_get_user_info(self):
-        self.assertEqual(self.get_user_info(), self.user)
+        self.assertEqual(get_user_info(), self.user)
 
     def test_print_database(self):
-        self.print_database()
+        print_database()
 
     def test_input_userdata_into_db(self):
-        self.input_userdata_into_db(self.user)
+        input_userdata_into_db(self.user)
 
     def test_print_user_in_db(self):
-        self.print_user_in_db()
+        print_user_in_db()
 
     def test_get_username(self):
-        self.assertEqual(self.get_username("RANDOM"), None)
-        self.assertNotEqual(self.get_username("Rob"), None)
+        self.assertEqual(get_username("RANDOM"), None)
+        self.assertNotEqual(get_username("Rob"), None)
 
     def test_parse_response(self):
-        self.parse_response(self.msg)
+        parse_response(self.msg)
