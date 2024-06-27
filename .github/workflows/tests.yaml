@@ -18,7 +18,7 @@ jobs:
           pip install coverage
 
       - name: Test with unittest
-        run: python3 -m unittest test.py
+        run: python3 -m unittest ./week2_project/test.py
 
       - name: Check code coverage
         run: |
