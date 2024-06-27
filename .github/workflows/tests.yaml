@@ -20,6 +20,7 @@ jobs:
           pip install tabulate
           pip install colorama
           pip install requests
+          pip install pandas
 
       - name: Test with unittest
         run: python3 -m unittest test.py
