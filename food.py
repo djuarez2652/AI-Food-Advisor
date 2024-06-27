@@ -6,11 +6,13 @@ import os
 
 """
 Takes a list of strings of food items and returns
-a list of INTs of their respective amount of calories 
-for each item; if not found in API it returns None. 
+a list of INTs of their respective amount of calories
+for each item; if not found in API it returns None.
 Appends the total number of calories at the end
 """
-def getCalories( lst_of_foods ):
+
+
+def getCalories(lst_of_foods):
 
     engine = sqlite3.connect("food.db")
     cursor = engine.cursor()
@@ -23,8 +25,6 @@ def getCalories( lst_of_foods ):
     """
     cursor.execute(create_table)
     engine.commit()
-
-
     lst_of_cals = []
     total = 0
 
@@ -41,41 +41,42 @@ def getCalories( lst_of_foods ):
 
         url = "https://food-nutrition-information.p.rapidapi.com/foods/search"
 
-        query = { 
+        query = {
                     "query": f"{food}",
                     "pageSize": "1",
                     "pageNumber": "1"
                 }
 
         RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
+        API_HOST = "food-nutrition-information.p.rapidapi.com"
 
         headers = {
                     "x-rapidapi-key": RAPIDAPI_KEY,
-                    "x-rapidapi-host": "food-nutrition-information.p.rapidapi.com"
+                    "x-rapidapi-host": API_HOST
                 }
 
         response = requests.get(url, headers=headers, params=query)
         data = response.json()
         try:
             foodNutrients = data['foods'][0]['foodNutrients']
-        except:
+        except KeyError:
             lst_of_cals.append(None)
             continue
 
         cals = None
         for nutrients in foodNutrients:
-            if nutrients['nutrientId'] == 1008: # cal id is 1008
+            if nutrients['nutrientId'] == 1008:  # cal id is 1008
                 cals = nutrients['value']
-                if cals > 400: # some serving sizes are too big
+                if cals > 400:  # some serving sizes are too big
                     cals //= 5
                 sql_insert = "INSERT INTO food (name, calories) VALUES (?,?)"
-                cursor.execute(sql_insert, (food.lower(),cals))
+                cursor.execute(sql_insert, (food.lower(), cals))
                 engine.commit()
                 total += cals
                 break
 
         lst_of_cals.append(cals)
-    
+
     lst_of_cals.append(total)
 
     engine.commit()
