@@ -18,7 +18,7 @@ client = OpenAI(
 
 
 def get_user_info():
-    reason = "Provide some information on your current eating habits: \n"
+    reason = "Provide some information on your eating habits(Allergens): \n"
     print("Please enter your information in the following questions:\n")
     user_input1 = input("What is your name? ")
     user_input2 = input("How old are you? ")
@@ -239,7 +239,7 @@ def edit_userdata(user_id):
             new_goal_weight = input("Enter your new goal weight: ").strip()
             update_user_info(user_id, 'goal_weight', new_goal_weight)
         elif selection == "5":
-            reason = "Enter your new info on your current eating habits: "
+            reason = "Enter your info on current eating habits(Allergens): "
             new_reason = input(reason).strip()
             update_user_info(user_id, "reason", new_reason)
         elif selection == "6":
