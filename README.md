@@ -1,9 +1,38 @@
 # Week 2: Project
 
-## Project Overview ## 
-1. Name of Project: A.I. Food Advisor
+## Set Up Instructions 
 
-idea: **Virtual Health Assistant** 
+Be sure to have Python 3.6 installed onto your computer. 
+
+1. First install the following libraries into your terminal: 
+
+```bash
+pip install openai sqlite3 tabulate colorama requests pandas
+```
+
+### Enviroment Variables
+
+You need to set up the API keys in your system as environment variables. Which
+can be set into your shell profile (.bashrc, .zshrc):
+For Both the Openai and Rapid’s Food Nutrition Information API:
+
+```bash
+export OPENAI_API_KEY='your_openai_api_key_here'
+export RAPIDAPI_KEY='your_rapid_api_key_here'
+```
+## How to run the code 
+1. Clone the repository or download the script.
+2. Ensure you have the necessary libraries installed (see Setup Instructions).
+3. Set the OPENAI_API_KEY and RAPIDAPI_KEY as environment variable.
+
+4. Run this command into your terminal: 
+```bash
+python3 main.py
+```
+
+
+## Project Overview 
+1. Name of Project: A.I. Food Advisor
 
 2. What problem are you solving?
 Our project will help others by giving people advice on eating healthy meals and 
@@ -15,7 +44,8 @@ a. people? Anyone that needs advice to live a healthy lifestyle
 
 
 b. other systems? (APIs)
-Chatgpt
+OPENAI API chatgpt 3.5 turbo
+Rapid’s Food Nutrition Information API
 
 c. Hardware?
 Anything that can run python
