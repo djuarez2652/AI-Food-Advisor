@@ -28,8 +28,8 @@ class TestMain(unittest.TestCase):
         print_user_in_db()
 
     def test_get_username(self):
-        self.assertEqual(get_username("RANDOM"), None)
-        self.assertNotEqual(get_username("Rob"), None)
+        self.assertEqual(get_username("Chiagozie"), None)
+        self.assertNotEqual(get_username("John"), None)
 
     def test_parse_response(self):
         parse_response(self.msg)
