@@ -1,5 +1,6 @@
 # Week 2: Project
 
+## Project Overview ## 
 1. Name of Project: A.I. Health Advisor
 idea: **Virtual Health Assistant** 
 
