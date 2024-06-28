@@ -1,7 +1,8 @@
 # Week 2: Project
 
 ## Project Overview ## 
-1. Name of Project: A.I. Health Advisor
+1. Name of Project: A.I. Food Advisor
+
 idea: **Virtual Health Assistant** 
 
 2. What problem are you solving?
